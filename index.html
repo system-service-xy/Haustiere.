@@ -5,80 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Sicherheitsüberprüfung</title>
+    <title>Haustiere</title>
     <style>
+        /* Grunddesign - Clean und ohne Leuchten */
         body {
-            background-color: #050505;
-            color: #0f0;
+            background-color: black;
+            color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 15px;
-            /* Extra Höhe, damit man auf iOS wischen kann und die Leisten verschwinden */
-            min-height: 110vh; 
-            overflow-x: hidden;
+            padding: 20px;
+            overflow-x: hidden; /* Nur horizontales Scrollen blockieren */
             transition: background-color 0.1s;
+            min-height: 110vh; /* Extra Höhe für den iOS Scroll-Trick */
         }
-
-        /* Realistischer Monitor-Effekt (Scanlines & Glow) */
-        body::after {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-
+        
         body.flash {
-            background-color: #500000;
+            background-color: #660000;
         }
 
         #console {
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.4;
             word-wrap: break-word;
-            text-shadow: 0 0 5px #00ff00; /* Leuchteffekt */
-            display: none;
-            z-index: 1;
-            position: relative;
-            padding-bottom: 50px;
+            display: none; 
+            padding-bottom: 50px; /* Platz nach unten lassen */
         }
         
         .cursor {
             display: inline-block;
             width: 8px;
             height: 1rem;
-            background-color: #0f0;
+            background-color: #00ff00;
             animation: blink 1s step-end infinite;
-            box-shadow: 0 0 5px #0f0;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Täuschend echtes iOS System-Popup */
+        /* Täuschend echtes System-Overlay */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         .alert-box {
             background: #1c1c1e;
             color: white;
-            width: 270px;
+            width: 280px;
+            padding: 20px;
             border-radius: 14px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .alert-content {
-            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .alert-title {
             font-weight: 600;
@@ -86,25 +67,20 @@
             margin-bottom: 8px;
         }
         .alert-text {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #ebebf5;
-            line-height: 1.3;
+            margin-bottom: 20px;
         }
         .alert-btn {
-            background: transparent;
-            color: #0a84ff;
+            background: #0a84ff;
+            color: white;
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.1);
             padding: 12px;
             width: 100%;
-            font-size: 1.05rem;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-        }
-        .alert-btn:active {
-            background: rgba(255,255,255,0.05);
-            border-bottom-left-radius: 14px;
-            border-bottom-right-radius: 14px;
         }
     </style>
 </head>
@@ -112,11 +88,9 @@
 
     <div id="overlay">
         <div class="alert-box">
-            <div class="alert-content">
-                <div class="alert-title">Sicherheitsproblem erkannt</div>
-                <div class="alert-text">Ein wichtiges System-Update muss installiert werden, um die Verbindung abzusichern.</div>
-            </div>
-            <button class="alert-btn" onclick="startHack()">Installieren</button>
+            <div class="alert-title">Sensible Inhalte</div>
+            <div class="alert-text">Es könnten sensible Inhalte zu sehen sein.</div>
+            <button class="alert-btn" onclick="startHack()">OK</button>
         </div>
     </div>
 
@@ -124,31 +98,40 @@
     <div id="cursor" class="cursor" style="display:none;"></div>
 
     <script>
-        // Generiert eine fake IP-Adresse für mehr Panik
+        // Generiert eine fake IP-Adresse für mehr Realismus
         const fakeIP = "192.168." + Math.floor(Math.random() * 255) + "." + Math.floor(Math.random() * 255);
 
         const messages = [
-            "INIT_SYS: Boot-Sequenz gestartet...",
-            "Lade Kernel-Module: OK",
-            "Bypasse OS-Sicherheitsprotokolle...",
-            "Warnung: Firewall-Reaktion blockiert.",
+            "Initiiere Root-Protokoll...",
+            "Bypasse Firewall-Einschränkungen...",
+            "Firewall DEAKTIVIERT.",
             "Zielgerät IP erkannt: " + fakeIP,
-            "Pinge " + fakeIP + "... Antwort erhalten.",
-            "Injiziere Remote-Access-Trojaner (RAT)...",
-            "Entschlüssele Keychain & lokales Dateisystem...",
-            "[####                ] 21% - Lese Passwörter...",
-            "[########            ] 44% - Lese Bankdaten...",
-            "[##############      ] 72% - Synchronisiere Galerie...",
-            "[####################] 100% - Payload erfolgreich.",
-            "Aktiviere Mikrofon-Schnittstelle...",
-            "> Mikrofon: ONLINE (Aufzeichnung gestartet)",
-            "Fordere Zugriff auf Kameralinsen an...",
-            "> Kamera: ONLINE (Stream an Server gesendet)",
-            "Erstelle Backup von WhatsApp-Verläufen...",
-            "Verschlüssele lokales Laufwerk...",
-            "Transferiere Krypto-Wallet-Keys...",
-            "Lösche digitale Spuren im System-Log...",
-            "Verbindung gesichert über Onion-Routing."
+            "Scanne nach Schwachstellen im TCP/IP-Protokoll...",
+            "Exploit gefunden in Port 8080.",
+            "Injiziere Payload in System-Cache...",
+            "Verbindung zum Remote-Server hergestellt.",
+            "Fordere erweiterte Berechtigungen an...",
+            "Zugriff gewährt. Administrator-Rechte erlangt.",
+            "Lade Benutzerdaten herunter...",
+            "Entschlüssele AES-256 Hash-Werte...",
+            "Passwort-Datenbank lokalisiert und kopiert.",
+            "Aktiviere Mikrofon-Zugriff im Hintergrund...",
+            "Mikrofon: ONLINE",
+            "Aktiviere Frontkamera...",
+            "Kamera: ONLINE - Übertrage Live-Bilder...",
+            "Synchronisiere Chat-Verläufe (WhatsApp, Telegram, SMS)...",
+            "[###                 ] 15%",
+            "[#######             ] 35%",
+            "[############        ] 60%",
+            "[#################   ] 85%",
+            "[####################] 100%",
+            "Extrahiere GPS-Standortdaten der letzten 30 Tage...",
+            "Standortdaten erfolgreich an Server gesendet.",
+            "Greife auf Krypto-Wallets und Banking-Apps zu...",
+            "Überweisung vorbereitet.",
+            "Lösche lokale Log-Dateien, um Spuren zu verwischen...",
+            "Verwische IP-Adresse über 7 Proxies...",
+            "Systemkontrolle vollständig übernommen."
         ];
 
         let messageIndex = 0;
@@ -160,7 +143,7 @@
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             
-            oscillator.type = 'sawtooth'; 
+            oscillator.type = 'square'; 
             
             if (highPitch) {
                 oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
@@ -170,7 +153,7 @@
                 oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3); 
             }
             
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
             
             oscillator.connect(gainNode);
@@ -183,7 +166,7 @@
             document.body.classList.add('flash');
             setTimeout(() => {
                 document.body.classList.remove('flash');
-            }, 80); 
+            }, 100); 
         }
 
         function startHack() {
@@ -191,19 +174,20 @@
             consoleElement.style.display = 'block';
             document.getElementById('cursor').style.display = 'inline-block';
 
-            // Versucht Vollbild bei Android
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen().catch(e => console.log(e));
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen().catch(e => console.log(e));
             }
 
-            // Scrollt automatisch ein Stück runter, was iOS Safari oft dazu bringt, die Leiste zu verkleinern
+            // Der iOS Scroll-Trick
             setTimeout(() => {
-                window.scrollTo({ top: 50, behavior: 'smooth' });
-            }, 100);
+                window.scrollTo({ top: 40, behavior: 'smooth' });
+            }, 150);
 
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-            setTimeout(printMessage, 600);
+            setTimeout(printMessage, 500);
         }
 
         function printMessage() {
@@ -211,24 +195,25 @@
                 const text = messages[messageIndex];
                 consoleElement.innerHTML += text + "<br>";
                 
-                if (text.includes("Kamera") || text.includes("Passwörter") || text.includes("ONLINE") || text.includes("100%")) {
+                if (text.includes("Kamera") || text.includes("Passwort") || text.includes("ONLINE") || text.includes("100%")) {
                     flashScreen();
-                    playCreepyBeep(text.includes("Kamera")); // Extremerer Ton bei der Kamera
-                } else if (Math.random() > 0.7) {
-                    playCreepyBeep(); // Zufälliges leises Piepen zwischendurch
+                    playCreepyBeep(true);
+                } else if (Math.random() > 0.8) {
+                    // Zufälliges leises Piepen zwischendurch (nur in 20% der Fälle)
+                    playCreepyBeep(false);
                 }
 
                 messageIndex++;
-                const randomDelay = Math.random() * 150 + 50; 
+                const randomDelay = Math.random() * 200 + 50; 
                 window.scrollTo(0, document.body.scrollHeight);
                 setTimeout(printMessage, randomDelay);
             } else {
                 setTimeout(() => {
                     flashScreen();
                     playCreepyBeep(true);
-                    consoleElement.innerHTML += "<br><br><span style='color: red; font-size: 1.3rem; font-weight: bold; background: black; padding: 5px; border: 2px solid red;'>CRITICAL ERROR: SYSTEM GESPERRT</span><br>";
+                    consoleElement.innerHTML += "<br><span style='color: red; font-size: 1.2rem; font-weight: bold;'>!!! GERÄT GESPERRT - DATEN-UPLOAD ABGESCHLOSSEN !!!</span><br>";
                     window.scrollTo(0, document.body.scrollHeight);
-                }, 1000);
+                }, 800);
             }
         }
     </script>
