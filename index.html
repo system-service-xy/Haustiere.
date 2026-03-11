@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Haustiere</title>
     <style>
-        /* Grunddesign - Clean und ohne Leuchten */
+        /* Grunddesign */
         body {
             background-color: black;
             color: #00ff00;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
             padding: 20px;
-            overflow-x: hidden; /* Nur horizontales Scrollen blockieren */
-            transition: background-color 0.1s;
-            min-height: 110vh; /* Extra Höhe für den iOS Scroll-Trick */
+            overflow: hidden;
+            transition: background-color 0.1s; /* Für den Blitz-Effekt */
         }
         
+        /* Die rote Blitz-Klasse */
         body.flash {
             background-color: #660000;
         }
@@ -27,8 +25,7 @@
             font-size: 1rem;
             line-height: 1.4;
             word-wrap: break-word;
-            display: none; 
-            padding-bottom: 50px; /* Platz nach unten lassen */
+            display: none; /* Erst versteckt, bis man auf OK klickt */
         }
         
         .cursor {
@@ -40,7 +37,7 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Täuschend echtes System-Overlay */
+        /* Täuschend echtes System-Overlay (iOS/Android Style) */
         #overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -53,7 +50,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         .alert-box {
-            background: #1c1c1e;
+            background: #1c1c1e; /* Dunkler Modus System-Grau */
             color: white;
             width: 280px;
             padding: 20px;
@@ -72,7 +69,7 @@
             margin-bottom: 20px;
         }
         .alert-btn {
-            background: #0a84ff;
+            background: #0a84ff; /* System-Blau */
             color: white;
             border: none;
             padding: 12px;
@@ -82,6 +79,16 @@
             font-weight: 600;
             cursor: pointer;
         }
+        body {
+        background-color: black;
+        color: #00ff00;
+        font-family: 'Courier New', Courier, monospace;
+        margin: 0;
+        padding: 20px;
+        overflow: hidden;
+        transition: background-color 0.1s;
+        min-height: 100dvh; /* Das ist neu! Dynamic Viewport Height für iOS */
+        }
     </style>
 </head>
 <body>
@@ -89,7 +96,7 @@
     <div id="overlay">
         <div class="alert-box">
             <div class="alert-title">Sensible Inhalte</div>
-            <div class="alert-text">Es könnten sensible Inhalte zu sehen sein.</div>
+            <div class="alert-text">Es könnten sensible Inhalte zusehen sein.</div>
             <button class="alert-btn" onclick="startHack()">OK</button>
         </div>
     </div>
@@ -98,18 +105,14 @@
     <div id="cursor" class="cursor" style="display:none;"></div>
 
     <script>
-        // Generiert eine fake IP-Adresse für mehr Realismus
-        const fakeIP = "192.168." + Math.floor(Math.random() * 255) + "." + Math.floor(Math.random() * 255);
-
         const messages = [
             "Initiiere Root-Protokoll...",
             "Bypasse Firewall-Einschränkungen...",
             "Firewall DEAKTIVIERT.",
-            "Zielgerät IP erkannt: " + fakeIP,
             "Scanne nach Schwachstellen im TCP/IP-Protokoll...",
             "Exploit gefunden in Port 8080.",
             "Injiziere Payload in System-Cache...",
-            "Verbindung zum Remote-Server hergestellt.",
+            "Verbindung zum Remote-Server hergestellt (IP: 192.168.x.x).",
             "Fordere erweiterte Berechtigungen an...",
             "Zugriff gewährt. Administrator-Rechte erlangt.",
             "Lade Benutzerdaten herunter...",
@@ -138,22 +141,17 @@
         const consoleElement = document.getElementById('console');
         let audioCtx;
 
-        function playCreepyBeep(highPitch = false) {
+        // Funktion für den unheimlichen Piepton
+        function playCreepyBeep() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             
-            oscillator.type = 'square'; 
+            oscillator.type = 'square'; // Klingt elektronisch und unangenehm
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
+            oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3); // Ton fällt ab
             
-            if (highPitch) {
-                oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
-                oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.2);
-            } else {
-                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
-                oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3); 
-            }
-            
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Nicht zu laut, aber hörbar
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
             
             oscillator.connect(gainNode);
@@ -162,55 +160,56 @@
             oscillator.stop(audioCtx.currentTime + 0.3);
         }
 
+        // Roter Blitz-Effekt
         function flashScreen() {
             document.body.classList.add('flash');
             setTimeout(() => {
                 document.body.classList.remove('flash');
-            }, 100); 
+            }, 100); // Nach 100 Millisekunden wieder schwarz
         }
 
+        // Haupt-Funktion, die beim Klick auf "OK" startet
         function startHack() {
+            // 1. Overlay verstecken & Konsole zeigen
             document.getElementById('overlay').style.display = 'none';
             consoleElement.style.display = 'block';
             document.getElementById('cursor').style.display = 'inline-block';
 
+            // 2. Vollbildmodus anfordern (Funktioniert meist auf Android Chrome, iOS Safari ist restriktiver)
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen().catch(e => console.log(e));
             } else if (document.documentElement.webkitRequestFullscreen) {
                 document.documentElement.webkitRequestFullscreen().catch(e => console.log(e));
             }
 
-            // Der iOS Scroll-Trick
-            setTimeout(() => {
-                window.scrollTo({ top: 40, behavior: 'smooth' });
-            }, 150);
-
+            // 3. Audio initialisieren
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+            // 4. Skript starten
             setTimeout(printMessage, 500);
         }
 
+        // Text-Druck-Funktion
         function printMessage() {
             if (messageIndex < messages.length) {
                 const text = messages[messageIndex];
                 consoleElement.innerHTML += text + "<br>";
                 
+                // Drama-Effekte hinzufügen
+                // Wenn "Kamera", "Passwort" oder "ONLINE" im Text vorkommt, blitzt es und piept!
                 if (text.includes("Kamera") || text.includes("Passwort") || text.includes("ONLINE") || text.includes("100%")) {
                     flashScreen();
-                    playCreepyBeep(true);
-                } else if (Math.random() > 0.8) {
-                    // Zufälliges leises Piepen zwischendurch (nur in 20% der Fälle)
-                    playCreepyBeep(false);
+                    playCreepyBeep();
                 }
 
                 messageIndex++;
-                const randomDelay = Math.random() * 200 + 50; 
+                const randomDelay = Math.random() * 200 + 50; // Leicht langsamer
                 window.scrollTo(0, document.body.scrollHeight);
                 setTimeout(printMessage, randomDelay);
             } else {
                 setTimeout(() => {
                     flashScreen();
-                    playCreepyBeep(true);
+                    playCreepyBeep();
                     consoleElement.innerHTML += "<br><span style='color: red; font-size: 1.2rem; font-weight: bold;'>!!! GERÄT GESPERRT - DATEN-UPLOAD ABGESCHLOSSEN !!!</span><br>";
                     window.scrollTo(0, document.body.scrollHeight);
                 }, 800);
